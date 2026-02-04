@@ -4,43 +4,35 @@ from .models import User
 from django.contrib.auth import authenticate
 from rest_framework import serializers
 from .models import User
+from rest_framework import serializers
+from .models import User
+
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, min_length=6)
 
     class Meta:
         model = User
         fields = (
-            'username',
-            'email',
-            'password',
-            'role',   # 👈 user-type
+            "username",
+            "email",
+            "mobile",
+            "gender",
+            "role",
+            "password",
         )
 
     def create(self, validated_data):
         user = User.objects.create_user(
-            username=validated_data['username'],
-            email=validated_data.get('email'),
-            password=validated_data['password'],
-            role=validated_data.get('role', User.Role.CUSTOMER)
+            username=validated_data["username"],
+            email=validated_data["email"],
+            mobile=validated_data["mobile"],
+            gender=validated_data.get("gender"),
+            role=validated_data.get("role"),
+            password=validated_data["password"],
         )
         return user
 
-
-## user update serializer
-class RegisterSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User
-        fields = ('username', 'email', 'password', 'role')
-        extra_kwargs = {'password': {'write_only': True}}
-
-    def validate_role(self, value):
-        if value in ['ADMIN', 'MANAGER', 'EXECUTIVE', 'STAFF', 'SUPPORT']:
-            raise serializers.ValidationError(
-                "You cannot register with this role."
-            )
-        return value
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

@@ -1,10 +1,8 @@
 from rest_framework.routers import DefaultRouter
-from .views import ProductViewSet, OrderViewSet
-
-router = DefaultRouter()
-router.register('products', ProductViewSet)
-
-router.register('orders', OrderViewSet, basename='orders')
+from .views import  StoreViewSet
+from django.urls import path
 
 
-urlpatterns = router.urls
+urlpatterns = [
+    path('create/', StoreViewSet.as_view(), name='stores'),
+]
