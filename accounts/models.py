@@ -13,7 +13,20 @@ class User(AbstractUser):
         STAFF = "STAFF", "Staff"
         CUSTOMER = "CUSTOMER", "Customer"
         SUPPORT = "SUPPORT", "Customer Support"
+        VENDOR = "VENDOR", "Vendor"
+    class Gender(models.TextChoices):
+        MALE = "MALE", "Male"
+        FEMALE = "FEMALE", "Female"
+        OTHER = "OTHER", "Other"
 
+        
+    email = models.EmailField(unique=True)
+    mobile = models.CharField(max_length=10, unique=True)
+    gender = models.CharField(
+        max_length=20,
+        choices=Gender.choices,
+        default=Gender.MALE
+    )
     role = models.CharField(
         max_length=20,
         choices=Role.choices,
@@ -28,3 +41,11 @@ class User(AbstractUser):
 
     def is_customer(self):
         return self.role == self.Role.CUSTOMER
+    
+    def create(self, validated_data):
+        password = validated_data.pop('password')
+        user = User(**validated_data)
+        user.set_password(password)  # 🔐 encrypts password
+        user.save()
+        return user
+
