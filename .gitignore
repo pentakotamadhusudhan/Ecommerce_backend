@@ -1,0 +1,76 @@
+# ========================
+# Python
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# ========================
+# Virtual Environments
+# ========================
+venv/
+env/
+.venv/
+venvdsa/
+ENV/
+env.bak/
+venv.bak/
+
+# ========================
+# Distribution / Packaging
+# ========================
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# ========================
+# Django
+# ========================
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# ========================
+# Jupyter / Data Science
+# ========================
+.ipynb_checkpoints/
+*.csv
+*.tsv
+*.xlsx
+
+# ========================
+# Environment variables
+# ========================
+.env
+.env.*
+secrets.json
+
+# ========================
+# OS / Editor junk
+# ========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# ========================
+# Pytest / Coverage
+# ========================
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ========================
+# MyPy
+# ========================
+.mypy_cache/
+
+# ========================
+# Logs
+# ========================
+*.log
