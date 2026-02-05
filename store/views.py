@@ -1,3 +1,5 @@
+import http
+from django.db.models import QuerySet, query
 from django.shortcuts import render
 
 # Create your views here.
@@ -6,7 +8,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 
-from generic_reponse import failed_response, success_response
+from generic_reponse import error_response, failed_response, success_response
 from .models import Product, Order, Store
 from .serializers import ProductSerializer, OrderSerializer, StoreSerializer
 from accounts.permissions import IsManager, IsStaff
@@ -34,5 +36,46 @@ class StoreViewSet(GenericAPIView):
             print("STORE CREATE ERROR:", e)
             return failed_response(
                 message="Internal server error",
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+    def get(self, req):
+        try:
+            # 1. Fetch the data from the actual Model (not 'QuerySet' itself)
+            store = Store.objects.all() 
+            
+            # 2. Pass the queryset to 'instance', not 'data'
+            # 3. Add 'many=True' because you are serializing a list (QuerySet)
+            ser = self.serializer_class(store, many=True)
+            
+            return success_response(
+                message="Store list",
+                status_code=200,
+                data=ser.data
+            )
+        except Exception as e:
+            return error_response(
+                # 4. Use str(e) to ensure the error message is serializable
+                message=str(e),
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+class GetStore(GenericAPIView):
+    serializer_class = StoreSerializer
+    queryset = Store
+
+    def get(self,req):
+        try:
+            store = QuerySet.objects.all()
+            ser = self.serializer_class(data=store)
+            return success_response(
+                message="Store list",
+                status_code = 200,
+                data= ser.data
+            )
+        except Exception as e:
+            return error_response(
+                message=e,
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
