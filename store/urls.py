@@ -7,4 +7,5 @@ from django.urls import path
 urlpatterns = [
     path('create/', StoreViewSet.as_view(), name='stores'),
     path('addproducts/', ProductPostView.as_view(), name='products_post'),
+    path('catagory/', CatagoryPostView.as_view(), name='catagory_post'),
 ]

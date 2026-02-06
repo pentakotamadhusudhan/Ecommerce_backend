@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'store',
-    'rest_framework','drf_yasg'
+    'rest_framework','drf_yasg',
+    
 ]
 
 MIDDLEWARE = [
@@ -57,7 +59,7 @@ ROOT_URLCONF = 'ecommerce.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,14 +80,14 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
-# DATABASES
+DATABASES = DATABASES
 
 
 # Password validation
@@ -138,3 +140,178 @@ SWAGGER_SETTINGS = {
     'LOGIN_URL': '/admin/login/',
     'LOGOUT_URL': '/admin/logout/',
 }
+
+
+# ========================================
+# JAZZMIN CONFIGURATION
+# ========================================
+
+JAZZMIN_SETTINGS = {
+    # Title on the login screen and in the browser tab
+    "site_title": "Local Baba Admin",
+    
+    # Title on the brand (top left)
+    "site_header": "Local Baba",
+     "site_logo": "images/logo.avif",
+    "login_logo":  "images/logo.avif",
+    # Logo to use for your site (must be present in static files)
+    # "site_logo": "images/logo.png",
+    
+    # Logo to use for login form (must be present in static files)
+    # "login_logo": "images/logo.png",
+    
+    # Welcome text on the login screen
+    "welcome_sign": "Welcome to Local Baba Admin Panel",
+    
+    # Copyright on the footer
+    "copyright": "Local Baba Marketplace",
+    
+    # The model admin to search from the search bar
+    "search_model": "users.User",
+    
+    # Field name on user model that contains avatar image
+    "user_avatar": "profile_picture",
+    
+    ############
+    # Top Menu #
+    ############
+    
+    # Links to put along the top menu
+    "topmenu_links": [
+        {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
+        {"name": "API Docs", "url": "/api/docs/", "new_window": True},
+        {"model": "users.User"},
+        {"app": "stores"},
+    ],
+    
+    #############
+    # User Menu #
+    #############
+    
+    # Additional links to include in the user menu
+    "usermenu_links": [
+        {"name": "Visit Site", "url": "/", "new_window": True},
+        {"model": "users.user"}
+    ],
+    
+    #############
+    # Side Menu #
+    #############
+    
+    # Whether to display the side menu
+    "show_sidebar": True,
+    
+    # Whether to aut expand the menu
+    "navigation_expanded": True,
+    
+    # Hide these apps when generating side menu
+    "hide_apps": [],
+    
+    # Hide these models when generating side menu
+    "hide_models": [],
+    
+    # Custom icons for side menu apps/models
+    "icons": {
+        "auth": "fas fa-users-cog",
+        "auth.user": "fas fa-user",
+        "auth.Group": "fas fa-users",
+        "users.User": "fas fa-users",
+        "stores.Store": "fas fa-store",
+        "products.Product": "fas fa-box",
+        "products.ProductCategory": "fas fa-tags",
+    },
+    
+    # Icons that are used when one is not manually specified
+    "default_icon_parents": "fas fa-chevron-circle-right",
+    "default_icon_children": "fas fa-circle",
+    
+    #################
+    # Related Modal #
+    #################
+    
+    # Use modals instead of popups
+    "related_modal_active": True,
+    
+    #############
+    # UI Tweaks #
+    #############
+    
+    # Relative paths to custom CSS/JS scripts
+    "custom_css": None,
+    "custom_js": None,
+    
+    # Whether to show the UI customizer on the sidebar
+    "show_ui_builder": True,
+    
+    ###############
+    # Change view #
+    ###############
+    
+    # Render out the change view as a single form, or in tabs
+    "changeform_format": "horizontal_tabs",
+    
+    # Override change forms on a per modeladmin basis
+    "changeform_format_overrides": {
+        "users.user": "collapsible",
+        "auth.group": "vertical_tabs",
+    },
+     # Custom ordering of apps/models in the side menu
+    "order_with_respect_to": [
+        "users",
+        "accounts.User",
+        "stores",
+        "stores.Store", 
+        "products",
+        "products.ProductCategory",
+        "products.Product",
+        "auth",
+    ],
+    
+    # Custom side menu apps/models
+    "custom_links": {
+        "stores": [{
+            "name": "Pending Approvals",
+            "url": "/admin/stores/store/?is_active__exact=0",
+            "icon": "fas fa-clock",
+            "permissions": ["stores.view_store"]
+        }]
+    },
+}
+
+# UI Tweaks
+JAZZMIN_UI_TWEAKS = {
+    "navbar_small_text": False,
+    "footer_small_text": False,
+    "body_small_text": False,
+    "brand_small_text": False,
+    "brand_colour": "navbar-success",
+    "accent": "accent-primary",
+    "navbar": "navbar-dark",
+    "no_navbar_border": False,
+    "navbar_fixed": False,
+    "layout_boxed": False,
+    "footer_fixed": False,
+    "sidebar_fixed": False,
+    "sidebar": "sidebar-dark-primary",
+    "sidebar_nav_small_text": False,
+    "sidebar_disable_expand": False,
+    "sidebar_nav_child_indent": False,
+    "sidebar_nav_compact_style": False,
+    "sidebar_nav_legacy_style": False,
+    "sidebar_nav_flat_style": False,
+    "theme": "default",  # Options: default, cerulean, cosmo, cyborg, darkly, flatly, journal, litera, lumen, lux, materia, minty, pulse, sandstone, simplex, slate, solar, spacelab, superhero, united, yeti
+    "dark_mode_theme": None,
+    "button_classes": {
+        "primary": "btn-primary",
+        "secondary": "btn-secondary",
+        "info": "btn-info",
+        "warning": "btn-warning",
+        "danger": "btn-danger",
+        "success": "btn-success"
+    }
+}
+
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_ROOT = BASE_DIR / 'staticfiles'

@@ -1,0 +1,117 @@
+{% extends "admin/change_list.html" %}
+{% load static %}
+
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Target the User model link in the sidebar */
+        .model-user::before {
+            content: "\f007"; /* FontAwesome User Icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            margin-right: 10px;
+            color: #C5A08E; /* Your Rose Gold color */
+        }
+    </style>
+{% endblock %}
+
+{% block content_title %}
+    <h1> {{ block.super }} </h1>
+{% endblock %}
+
+{% block result_list %}
+    <div style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin: 30px 0;">
+        
+        <div style="flex: 1; min-width: 300px; max-width: 450px; padding: 20px; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <canvas id="revenueChart"></canvas>
+        </div>
+
+        <div style="flex: 1; min-width: 300px; max-width: 450px; padding: 20px; background: #ffffff; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05);">
+            <canvas id="categoryChart"></canvas>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            
+            // --- CHART 1: REVENUE FLOW (Doughnut) ---
+            const ctx1 = document.getElementById('revenueChart').getContext('2d');
+            new Chart(ctx1, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        data: [400, 550, 300, 800],
+                        backgroundColor: ['#C5A08E', '#2D2D2D', '#E5E5E5', '#A67C52'],
+                        borderRadius: 8,
+                        cutout: '70%'
+                    }]
+                },
+                options: {
+                    plugins: {
+                        title: { display: true, text: 'MONTHLY REVENUE FLOW', color: '#C5A08E', font: { weight: 'bold' } },
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // --- CHART 2: SALES BY CATEGORY (Bar with Icons) ---
+            const ctx2 = document.getElementById('categoryChart').getContext('2d');
+            
+            // Ensure icons array matches the length of your labels (5 categories)
+            const categoryIcons = ['\uf109', '\uf553', '\uf015', '\ufbd2', '\uf553']; 
+
+            const iconPlugin = {
+                id: 'iconPlugin',
+                afterDatasetsDraw(chart) {
+                    const { ctx, data, scales: { x, y } } = chart;
+                    ctx.save();
+                    ctx.font = '20px "Font Awesome 6 Free"';
+                    ctx.fillStyle = '#2D2D2D';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'bottom';
+                    ctx.fontWeight = '900';
+
+                    data.datasets[0].data.forEach((value, index) => {
+                        const xPos = x.getPixelForValue(index);
+                        const yPos = y.getPixelForValue(value) - 5;
+                        if (categoryIcons[index]) {
+                            ctx.fillText(categoryIcons[index], xPos, yPos);
+                        }
+                    });
+                    ctx.restore();
+                }
+            };
+
+            new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Electronics', 'Apparel', 'Home', 'Beauty', 'Clothes'],
+                    datasets: [{
+                        label: 'Units Sold',
+                        data: [120, 190, 80, 150, 500],
+                        backgroundColor: '#C5A08E',
+                        borderRadius: 10
+                    }]
+                },
+                options: {
+                    layout: { padding: { top: 30 } },
+                    scales: {
+                        y: { beginAtZero: true, grid: { display: false } },
+                        x: { grid: { display: false } }
+                    },
+                    plugins: {
+                        title: { display: true, text: 'SALES BY CATEGORY', color: '#2D2D2D', font: { weight: 'bold' } },
+                        legend: { display: false }
+                    }
+                },
+                plugins: [iconPlugin]
+            });
+        });
+    </script>
+
+    {{ block.super }}
+{% endblock %}

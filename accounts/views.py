@@ -19,15 +19,25 @@ class RegisterView(GenericAPIView):
     def post(self, request):
         try:
             serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
 
-            return success_response(
-                message="User registered successfully",
-                status_code=status.HTTP_201_CREATED,
-                data=serializer.data
-            )
+            if serializer.is_valid():
+                serializer.save()
+                return success_response(
+                    message="User registered successfully",
+                    status_code=status.HTTP_201_CREATED,
+                    data=serializer.data
+                )
+            else:
+                error_dict = serializer.errors
+                first_field = next(iter(error_dict))  # Gets 'mobile'
+                error_message = error_dict[first_field][0]  # Gets the first string in the list
 
+                return error_response(
+                    message=error_message,
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    data=None # Or {} if you want to keep the data key empty
+                )
+                
         except ValidationError as e:
             return error_response(
                 message="Validation error",

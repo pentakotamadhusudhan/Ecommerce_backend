@@ -1,17 +1,13 @@
-from tkinter import CASCADE
-from django.db import models
-
-# Create your models here.
 from django.db import models
 from django.conf import settings
 
+# 1. Using the setting for the User model is correct
 User = settings.AUTH_USER_MODEL
-
 
 class Store(models.Model):
     vendor = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
+        User, 
+        on_delete=models.CASCADE, 
         related_name="stores"
     )
     name = models.CharField(max_length=255)
@@ -23,24 +19,36 @@ class Store(models.Model):
     def __str__(self):
         return self.name
 
-class Product(models.Model):
-    
-    name = models.CharField(max_length=200)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    original_price = models.DecimalField(max_digits=10, decimal_places=2)
-    stock = models.IntegerField()
-    vendor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
-    brand = models.CharField(max_length= 30)
-    created_at= models.DateTimeField(auto_now_add=True)
-    updated_at= models.DateTimeField(auto_now=True)
-    class Meta:
-        db_table = 'products_table'
+
+class ProductCategory(models.Model):  # Fixed typo: Category (singular is standard)
+    category_name = models.CharField(max_length=50)
+
     def __str__(self):
-        return self.name
+        return self.category_name
 
 
-class Order(models.Model):
-    customer = models.ForeignKey(User, on_delete=models.CASCADE)
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, default="PENDING")
-    created_at = models.DateTimeField(auto_now_add=True)
+class Product(models.Model):  # Naming convention: Singular (Product, not ProductsModel)
+    product_name = models.CharField(max_length=50)
+    
+    # 2. Changed to DecimalField for currency precision
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    
+    # 3. Explicitly named upload_to
+    product_image = models.ImageField(upload_to='productImages/', null=True, blank=True)
+    
+    # 4. Added mandatory on_delete
+    category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name="products")
+    
+    veg_flag = models.BooleanField(default=False)
+    description = models.TextField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    
+    # 5. Fixed reference to User and added on_delete
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    
+    # 6. Swapped auto_now logic
+    created_at = models.DateTimeField(auto_now_add=True) # Set on creation
+    updated_at = models.DateTimeField(auto_now=True)     # Updates on every save
+    
+    def __str__(self):
+        return self.product_name

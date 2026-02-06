@@ -9,8 +9,8 @@ from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from generic_reponse import error_response, failed_response, success_response
-from .models import Product, Order, Store
-from .serializers import ProductSerializer, OrderSerializer, StoreSerializer
+from .models import  Store
+from .serializers import StoreSerializer
 from accounts.permissions import IsManager, IsStaff
 from .permissions import IsVendor, IsOwnerVendor
 
@@ -22,15 +22,25 @@ class StoreViewSet(GenericAPIView):
     def post(self, request):
         try:
             serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
+            if serializer.is_valid():
 
-            serializer.save(vendor=request.user)
+                serializer.save(vendor=request.user)
 
-            return success_response(
-                message="Store created successfully",
-                data=serializer.data,
-                status_code=status.HTTP_201_CREATED
-            )
+                return success_response(
+                    message="Store created successfully",
+                    data=serializer.data,
+                    status_code=status.HTTP_201_CREATED
+                )
+            else:
+                error_dict = serializer.errors
+                first_field = next(iter(error_dict))  # Gets 'mobile'
+                error_message = error_dict[first_field][0]  # Gets the first string in the list
+
+                return error_response(
+                    message=error_message,
+                    status_code=startus.HTTP_400_BAD_REQUEST,
+                    data=None # Or {} if you want to keep the data key empty
+                )
 
         except Exception as e:
             print("STORE CREATE ERROR:", e)
@@ -41,11 +51,9 @@ class StoreViewSet(GenericAPIView):
         
     def get(self, req):
         try:
-            # 1. Fetch the data from the actual Model (not 'QuerySet' itself)
             store = Store.objects.all() 
             
-            # 2. Pass the queryset to 'instance', not 'data'
-            # 3. Add 'many=True' because you are serializing a list (QuerySet)
+           
             ser = self.serializer_class(store, many=True)
             
             return success_response(
