@@ -52,3 +52,33 @@ class Product(models.Model):  # Naming convention: Singular (Product, not Produc
     
     def __str__(self):
         return self.product_name
+
+
+
+
+# models.py
+
+class StoreProduct(models.Model):
+    store = models.ForeignKey(
+        Store,
+        on_delete=models.CASCADE,
+        related_name="store_products"
+    )
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name="product_stores"
+    )
+    category = models.ForeignKey(ProductCategory,on_delete=models.CASCADE,related_name="product_category")
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    qty = models.IntegerField(default=0)
+    original_price = models.FloatField(default=0.0)
+    discount_price= models.FloatField(default=0.0)
+    class Meta:
+        unique_together = ("store", "product")
+        verbose_name = "Store Product"
+        verbose_name_plural = "Store Products"
+
+    def __str__(self):
+        return f"{self.store.name} - {self.product.product_name}"

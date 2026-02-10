@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import *
 
@@ -27,7 +28,27 @@ class ProductSerializer(serializers.ModelSerializer):
         
 
 
+from rest_framework import serializers
+from .models import Product
 
+class ProductDashboardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id', 'product_name', 'price', 'product_image', 'veg_flag', 'description', 'category_id']
         
 
 
+
+
+class StoreProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StoreProduct
+        fields = [
+            "id",
+            "store",
+            "product",
+            "is_active",
+            "created_at"
+        ]
+        read_only_fields = ["id", "created_at"]
+        depth=1

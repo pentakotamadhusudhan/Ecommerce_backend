@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from generic_reponse import error_response, failed_response, success_response
 from .models import  Store
-from .serializers import StoreSerializer
+from .serializers import  StoreSerializer
 from accounts.permissions import IsManager, IsStaff
 from .permissions import IsVendor, IsOwnerVendor
 
@@ -86,4 +86,41 @@ class GetStore(GenericAPIView):
             return error_response(
                 message=e,
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
+
+
+    # Only logged-in store owners can add products
+    # permission_classes = [IsAuthenticated]
+    # parser_classes = (MultiPartParser, FormParser)
+
+    def post(self, request):
+        try:
+            # Pass the data to the serializer
+            serializer = AddProductSerializer(data=request.data)
+            
+            if serializer.is_valid():
+                # Save the product and manually assign the owner (store)
+                serializer.save(
+                    created_by_id=request.user.id,
+                    is_active=True
+                )
+                
+                return success_response(
+                    message="Product added successfully to your store!",
+                    status_code=201,
+                    data=serializer.data
+                )
+            
+            return failed_response(
+                message="Validation Failed",
+                data=serializer.errors,
+                status_code=400
+            )
+
+        except Exception as e:
+            return failed_response(
+                message=str(e),
+                status_code=500
             )
