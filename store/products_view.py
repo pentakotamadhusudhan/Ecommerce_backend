@@ -4,7 +4,7 @@ from rest_framework import serializers, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from .models import *
-from .serializers import CatagorySerializer, ProductDashboardSerializer, ProductSerializer, StoreProductSerializer
+from .serializers import CatagorySerializer, ProductDashboardSerializer, ProductSerializer, StoreProductSerializer, StoreSerializer
 from generic_reponse import *
 
 class ProductPostView(GenericAPIView):
@@ -242,7 +242,6 @@ class LinkProductToStoreAPI(APIView):
         )
 
 
-from rest_framework.generics import GenericAPIView
 class ProductsbyStores(GenericAPIView):
     serializer_class = StoreProductSerializer
     queryset = StoreProduct.objects.all()
@@ -288,3 +287,30 @@ class ProductsbyStores(GenericAPIView):
                 status_code=500,
                 message=str(e)
             )
+        
+class productDetailsView(GenericAPIView):
+    serializer_class =ProductSerializer
+    queryset = Product.objects.all()
+
+    def get(self,request,id):
+        da = Product.objects.get(id=id)
+        ser = self.serializer_class(da)
+        return success_response(
+            status_code=200,
+            message="Product details",
+            data=ser.data
+        )
+    
+
+class GetStoresView(GenericAPIView):
+    serializer_class =StoreSerializer
+    queryset = Store.objects.all()
+
+    def get(self,request):
+        da = Store.objects.all()
+        ser = self.serializer_class(da,many= True)
+        return success_response(
+            status_code=200,
+            message="Store details",
+            data=ser.data
+        )

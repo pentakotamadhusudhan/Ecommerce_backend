@@ -15,4 +15,6 @@ urlpatterns = [
 #      ProductsbyStores.as_view(), 
 #      name='products_by_store_details'),
     path('store/products/', ProductsbyStores.as_view(), name='flexible_product_filter'),
+    path('store/productdetails/<int:id>', productDetailsView.as_view(), name='productDetailsView'),
+    path('store/stores/', GetStoresView.as_view(), name='Stores_list'),
 ]

@@ -41,12 +41,15 @@ class ProductDashboardSerializer(serializers.ModelSerializer):
 
 
 class StoreProductSerializer(serializers.ModelSerializer):
+    category = CatagorySerializer(read_only=True)
+
     class Meta:
         model = StoreProduct
         fields = [
             "id",
             "store",
             "product",
+            "category",
             "is_active",
             "created_at"
         ]
