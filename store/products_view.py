@@ -289,11 +289,11 @@ class ProductsbyStores(GenericAPIView):
             )
         
 class productDetailsView(GenericAPIView):
-    serializer_class =ProductSerializer
-    queryset = Product.objects.all()
+    serializer_class =StoreProductSerializer
+    queryset = StoreProduct.objects.all()
 
     def get(self,request,id):
-        da = Product.objects.get(id=id)
+        da = StoreProduct.objects.get(id=id)
         ser = self.serializer_class(da)
         return success_response(
             status_code=200,

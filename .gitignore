@@ -31,7 +31,6 @@ dist/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-<<<<<<< HEAD
 media/
 staticfiles/
 
@@ -75,7 +74,6 @@ htmlcov/
 # Logs
 # ========================
 *.log
-=======
 
 # Flask stuff:
 instance/
@@ -221,4 +219,6 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
->>>>>>> 0a7d300d53db31d2e1bef9d3281303bc04c8e0ee
+
+*.pyc
+ecommerce/__pycache__/urls.cpython-310.pyc

@@ -45,13 +45,6 @@ class StoreProductSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = StoreProduct
-        fields = [
-            "id",
-            "store",
-            "product",
-            "category",
-            "is_active",
-            "created_at"
-        ]
+        fields = "__all__"
         read_only_fields = ["id", "created_at"]
         depth=1

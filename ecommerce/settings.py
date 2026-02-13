@@ -32,6 +32,8 @@ ALLOWED_HOSTS = ['*']
 
 INSTALLED_APPS = [
     'jazzmin',
+    'corsheaders',  # <--- Add this
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,14 +47,19 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', # MUST be at the top
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'django.middleware.common.CommonMiddleware', # MUST be after CorsMiddleware
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Add these lines at the bottom of settings.py
+CORS_ALLOW_ALL_ORIGINS = True  # For development only
+CORS_ALLOW_CREDENTIALS = True
 
 ROOT_URLCONF = 'ecommerce.urls'
 
@@ -72,9 +79,15 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'ecommerce.wsgi.application'
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://dds0rq7n-8000.inc1.devtunnels.ms',
+]
 REST_FRAMEWORK = {
-    "EXCEPTION_HANDLER": "accounts.utils.custom_exception_handler"
+    "EXCEPTION_HANDLER": "accounts.utils.custom_exception_handler",
+    "DEFAULT_RENDERER_CLASSES": [
+        "rest_framework.renderers.JSONRenderer",
+        "rest_framework.renderers.BrowsableAPIRenderer",
+    ]
 }
 
 # Database
@@ -311,7 +324,12 @@ JAZZMIN_UI_TWEAKS = {
     }
 }
 
-
+import os
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+MEDIA_URL = '/' 
+
+# The absolute filesystem path to the directory that will hold user-uploaded files
+MEDIA_ROOT = os.path.join(BASE_DIR, 'productImages')
