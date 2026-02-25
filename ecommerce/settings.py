@@ -91,8 +91,10 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # FIX: Media URL should not be '/'
-MEDIA_URL = '/media/' 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'productImages')
+# MEDIA_URL = '/media/' 
+# MEDIA_ROOT = os.path.join(BASE_DIR, 'productImages')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
@@ -143,9 +145,10 @@ JAZZMIN_SETTINGS = {
         "auth.group": "fas fa-users",
         "accounts.user": "fas fa-user-shield",
         "store.store": "fas fa-store",
+        'store.storeproduct': "fas fa-box",
         "store.product": "fas fa-shopping-bag",
         "store.productcategory": "fas fa-th-list",
-        "store.productimage": "fas fa-image",
+
     },
     
     "order_with_respect_to": [
@@ -153,9 +156,9 @@ JAZZMIN_SETTINGS = {
         "accounts.User",
         "stores",
         "stores.Store", 
-        "products",
-        "products.ProductCategory",
-        "products.Product",
+        "store",
+        "store.ProductCategory",
+        "store.Product",
         "auth",
     ],
     
