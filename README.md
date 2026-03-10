@@ -28,33 +28,6 @@ It features a polished admin interface using **Jazzmin**, comprehensive API docu
 *   **Database**: SQLite (Development) / PostgreSQL (Production ready)
 *   **CORS**: django-cors-headers
 
-## 🏗️ System Architecture
-
-The following diagram illustrates the high-level architecture and data flow of the Local Baba backend:
-
-```mermaid
-graph TD
-    Client[Mobile/Web Client] -->|HTTP Requests| Nginx[Web Server / Proxy]
-    Nginx -->|Forward| Gunicorn[WSGI Server]
-    Gunicorn -->|Execute| Django[Django Backend]
-    
-    subgraph "Django Application"
-        Django --> Auth[Authentication (Accounts)]
-        Django --> Store[Store Management]
-        Django --> Products[Product Catalog]
-        Django --> Admin[Jazzmin Admin Panel]
-        
-        Auth --> DB[(Database)]
-        Store --> DB
-        Products --> DB
-        
-        Products --> Media[Media Files (Images)]
-    end
-    
-    Admin -->|Manage| DB
-    Admin -->|Upload| Media
-```
-
 ## 📦 Installation & Setup
 
 Follow these steps to get the project running locally.
