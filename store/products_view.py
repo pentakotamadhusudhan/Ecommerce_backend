@@ -195,36 +195,76 @@ class CustomerDashboardAPI(APIView):
                 "status": "error",
                 "message": str(e)  # <--- This 'str()' prevents your exact error
             }, status=status.HTTP_400_BAD_REQUEST)
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 
-class LinkProductToStoreAPI(APIView):
+
+
+class LinkProductToStoreAPI(GenericAPIView):
+    queryset = StoreProduct.objects.all()
+    serializer_class = StoreProductSerializer
+
     def post(self, request):
-        store_id = request.data.get("store_id")
-        product_id = request.data.get("product_id")
-
-        if not store_id or not product_id:
-            return Response(
-                {"error": "store_id and product_id are required"},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
         try:
-            store = Store.objects.get(id=store_id)
-            product = Product.objects.get(id=product_id)
-        except (Store.DoesNotExist, Product.DoesNotExist):
-            return Response(
-                {"error": "Store or Product not found"},
-                status=status.HTTP_404_NOT_FOUND
+            store_id = request.data.get("store_id")
+            product_id = request.data.get("product_id")
+            category_id = request.data.get("category_id")
+
+            if not store_id or not product_id or not category_id:
+                return Response(
+                    {"error": "store_id, product_id and category_id are required"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            try:
+                store = Store.objects.get(id=store_id)
+            except Store.DoesNotExist:
+                return Response(
+                    {"message": "Store not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                return Response(
+                    {"message": "Product not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            try:
+                category = ProductCategory.objects.get(id=category_id)
+            except ProductCategory.DoesNotExist:
+                return Response(
+                    {"message": "Category not found"},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            store_product, created = StoreProduct.objects.get_or_create(
+                store=store,
+                product=product,
+                defaults={
+                    "category": category,
+                    "qty": request.data.get("qty", 0),
+                    "original_price": request.data.get("original_price", 0),
+                    "discount_price": request.data.get("discount_price", 0),
+                    "is_active": request.data.get("is_active", True),
+                }
             )
 
-        store_product, created = StoreProduct.objects.get_or_create(
-            store=store,
-            product=product
-        )
+            serializer = StoreProductSerializer(store_product)
 
-        serializer = StoreProductSerializer(store_product)
+            if created:
+                return Response(
+                    {
+                        "message": "Product linked to store successfully",
+                        "data": serializer.data
+                    },
+                    status=status.HTTP_201_CREATED
+                )
 
-        if not created:
             return Response(
                 {
                     "message": "Product already linked to this store",
@@ -233,14 +273,11 @@ class LinkProductToStoreAPI(APIView):
                 status=status.HTTP_200_OK
             )
 
-        return Response(
-            {
-                "message": "Product linked to store successfully",
-                "data": serializer.data
-            },
-            status=status.HTTP_201_CREATED
-        )
-
+        except Exception as e:
+            return Response(
+                {"message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 class ProductsbyStores(GenericAPIView):
     serializer_class = StoreProductSerializer

@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.generics import GenericAPIView
 from rest_framework.permissions import IsAuthenticated
-
+from accounts.models import User
 from generic_reponse import error_response, failed_response, success_response
 from .models import  Store
 from .serializers import  StoreSerializer
@@ -17,14 +17,15 @@ from .permissions import IsVendor, IsOwnerVendor
 
 class StoreViewSet(GenericAPIView):
     serializer_class = StoreSerializer
-    permission_classes = [IsAuthenticated, IsVendor]
+    # permission_classes = [IsAuthenticated, IsVendor]
 
     def post(self, request):
         try:
             serializer = self.get_serializer(data=request.data)
             if serializer.is_valid():
-
-                serializer.save(vendor=request.user)
+                print(request.data.get('vendor_id'))
+                vendor = User.objects.get(id=request.data.get('vendor_id'))
+                serializer.save(vendor=vendor)
 
                 return success_response(
                     message="Store created successfully",
@@ -52,10 +53,7 @@ class StoreViewSet(GenericAPIView):
     def get(self, req):
         try:
             store = Store.objects.all() 
-            
-           
             ser = self.serializer_class(store, many=True)
-            
             return success_response(
                 message="Store list",
                 status_code=200,
