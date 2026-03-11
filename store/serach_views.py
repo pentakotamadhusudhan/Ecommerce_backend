@@ -48,6 +48,7 @@ class GlobalSearchAPI(GenericAPIView):
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
+            print("search error : ",e)
             return Response({
                 "status": "error",
                 "message": str(e)

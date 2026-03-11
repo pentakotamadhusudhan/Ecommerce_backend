@@ -82,3 +82,43 @@ class StoreProduct(models.Model):
 
     def __str__(self):
         return f"{self.store.name} - {self.product.product_name}"
+
+
+
+
+
+class EventLog(models.Model):
+
+    EVENT_TYPES = [
+        ("product_click", "Product Click"),
+        ("category_click", "Category Click"),
+        ("store_click", "Store Click"),
+        ("page_view", "Page View"),
+    ]
+
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+
+    event_type = models.CharField(max_length=50, choices=EVENT_TYPES)
+
+    product_id = models.CharField(max_length=200, null=True, blank=True)
+    category_id = models.CharField(max_length=200, null=True, blank=True)
+    store_id = models.CharField(max_length=200, null=True, blank=True)
+
+    device_id = models.CharField(max_length=200, null=True, blank=True)
+    session_id = models.CharField(max_length=200, null=True, blank=True)
+
+    metadata = models.JSONField(null=True, blank=True)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        indexes = [
+            models.Index(fields=["event_type"]),
+            models.Index(fields=["product_id"]),
+            models.Index(fields=["category_id"]),
+            models.Index(fields=["store_id"]),
+            models.Index(fields=["created_at"]),
+        ]
+
+    def __str__(self):
+        return f"{self.event_type} - {self.user}"

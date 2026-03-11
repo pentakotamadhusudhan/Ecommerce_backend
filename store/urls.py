@@ -19,4 +19,5 @@ urlpatterns = [
     path('store/productdetails/<int:id>', productDetailsView.as_view(), name='productDetailsView'),
     path('store/stores/', GetStoresView.as_view(), name='Stores_list'),
     path('search/', GlobalSearchAPI.as_view(), name='global_search'),
+     path("log-event/", LogEvent.as_view(),name="Log event"),
 ]

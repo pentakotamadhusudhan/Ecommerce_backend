@@ -4,7 +4,7 @@ from rest_framework import serializers, status
 from rest_framework.generics import GenericAPIView
 from rest_framework.views import APIView
 from .models import *
-from .serializers import CatagorySerializer, ProductDashboardSerializer, ProductSerializer, StoreProductSerializer, StoreSerializer
+from .serializers import CatagorySerializer, EventLogSerializer, ProductDashboardSerializer, ProductSerializer, StoreProductSerializer, StoreSerializer
 from generic_reponse import *
 
 class ProductPostView(GenericAPIView):
@@ -134,8 +134,7 @@ class ProductsByCategory(GenericAPIView):
 
     def get(self, request, category): # 'category' comes from the URL path
         try:
-            # 1. Filter by category_id (or category__category_name) 
-            # based on the string passed in the URL
+            
             products = Product.objects.filter(
                 category_id=category, 
                 is_active=True
@@ -195,9 +194,6 @@ class CustomerDashboardAPI(APIView):
                 "status": "error",
                 "message": str(e)  # <--- This 'str()' prevents your exact error
             }, status=status.HTTP_400_BAD_REQUEST)
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 
 
 
@@ -279,33 +275,37 @@ class LinkProductToStoreAPI(GenericAPIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
+
+
 class ProductsbyStores(GenericAPIView):
     serializer_class = StoreProductSerializer
     queryset = StoreProduct.objects.all()
 
-    # Note: Removed the extra arguments from the get method
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         try:
-            # 1. Correct way to get Query Parameters (?category_id=1)
+            # Get query parameters
             cat_id = request.query_params.get('category_id')
             prod_id = request.query_params.get('product_id')
             st_id = request.query_params.get('store_id')
 
             print(f"Filtering for Category: {cat_id}, Product: {prod_id}, Store: {st_id}")
 
-            # 2. Start with all products
+            # Base queryset
             data = StoreProduct.objects.filter(is_active=True)
 
-            # 3. Dynamically apply filters if they are present in the URL
-            if cat_id:
+            # Apply filters dynamically
+            if cat_id !=None:
                 data = data.filter(product__category_id=cat_id)
-            if prod_id:
-                data = data.filter(product_id=prod_id)
-            if st_id:
-                data = data.filter(store_id=st_id)
+                print("data ",cat_id)
+                print("data ",data)
+            # if prod_id !=None:
+            #     data = data.filter(product_id=prod_id)
 
+            # if st_id !=None:
+            #     data = data.filter(store_id=st_id)
+            
             if not data.exists():
-                return failed_response(
+                return error_response(
                     status_code=404,
                     message="No matching products found."
                 )
@@ -321,10 +321,8 @@ class ProductsbyStores(GenericAPIView):
         except Exception as e:
             print(f"Error occurred: {e}")
             return failed_response(
-                status_code=500,
                 message=str(e)
-            )
-        
+            ) 
 class productDetailsView(GenericAPIView):
     serializer_class =StoreProductSerializer
     queryset = StoreProduct.objects.all()
@@ -350,4 +348,30 @@ class GetStoresView(GenericAPIView):
             status_code=200,
             message="Store details",
             data=ser.data
+        )
+    
+
+
+
+class LogEvent(GenericAPIView):
+    serializer_class = EventLogSerializer
+    queryset = EventLog.objects.all()
+
+    def post(self, request, *args, **kwargs):
+
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+
+            return Response(
+                {
+                    "message": "Event logged successfully"
+                },
+                status=status.HTTP_201_CREATED
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
         )

@@ -48,3 +48,11 @@ class StoreProductSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ["id", "created_at"]
         depth=1
+
+
+
+class EventLogSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = EventLog
+        fields = "__all__"
